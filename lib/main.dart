@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+Quizbrain quizbrain = Quizbrain();
 
 void main() => runApp(Quizzler());
 
@@ -25,66 +29,138 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  List<Icon> scorekeeper =[];
+  void alerter(bool usranswer) {
+
+      Alert(
+        context: context,
+        type: AlertType.error,
+        title: "Out of questions",
+        desc: "do you wish to reset the question list"
+            ",Last questions answer was true",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "yes",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+
+
+            },
+            width: 120,
+          )
+        ],
+      ).show();
+
+
+  }
+  void answchk(bool useranswer){
+    if(useranswer==quizbrain.getanswer())
+      {
+        scorekeeper.add(Icon(Icons.check, color: Colors.green, size: 25,),);
+      }
+
+
+    else {
+      scorekeeper.add(Icon(Icons.close, color: Colors.red, size: 25, ),);
+    }
+
+    setState(() {
+      quizbrain.questionchk();
+
+    });
+  }
+  bool answusr;
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Expanded(
-          flex: 5,
-          child: Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Center(
-              child: Text(
-                'This is where the question text will go.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 25.0,
-                  color: Colors.white,
-                ),
-              ),
+        Container(
+          margin: EdgeInsets.fromLTRB(10, 150, 0, 0),
+          alignment: Alignment.center,
+          child: Text(
+            quizbrain.getquestion(),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
             ),
           ),
         ),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(15.0),
-            child: FlatButton(
-              textColor: Colors.white,
-              color: Colors.green,
+        SizedBox(
+          height: 120,
+        ),
+        TextButton(
+          onPressed: () {
+            answusr=true;
+            answchk(answusr);
+            if (quizbrain.quesno==12) {
+              answchk(answusr);
+              alerter(answusr);
+
+              scorekeeper =[];
+            }
+
+            print(quizbrain.quesno);
+
+
+
+          },
+          child: Container(
+
+            margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(20),
+            color: Colors.green,
+            child: Center(
               child: Text(
                 'True',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20.0,
+                  fontSize: 20,
                 ),
               ),
-              onPressed: () {
-                //The user picked true.
-              },
             ),
           ),
         ),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(15.0),
-            child: FlatButton(
-              color: Colors.red,
+        SizedBox(
+          height: 10,
+        ),
+        TextButton(
+          onPressed: () {
+            answusr=false;
+            answchk(answusr);
+
+            if (quizbrain.quesno==12) {
+              answchk(answusr);
+              alerter(answusr);
+              scorekeeper =[];
+
+            }
+
+
+
+          },
+          child: Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(20),
+            color: Colors.red,
+            child: Center(
               child: Text(
                 'False',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.white,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-              onPressed: () {
-                //The user picked false.
-              },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+
+        Row(
+          children:
+            scorekeeper,
+
+        ),
       ],
     );
   }
